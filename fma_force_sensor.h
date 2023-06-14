@@ -63,13 +63,13 @@ class FMA_Force_Sensor {
     
 
     private:
-    I2C sh_i2c;
+    I2C _sh_i2c;
     int _max_range;
     int _transfer_value;
     int _device_address;
     int _zero_value;
-    void _get_force_raw(int* force_raw);
-    void _get_temp_raw(int* temp_raw);
+    void _get_force_raw(void);
+    void _get_temp_raw(void);
     void _calibration_delay(void);
 
 };

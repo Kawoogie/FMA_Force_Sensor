@@ -63,11 +63,12 @@ void FMA_Force_Sensor::get_force(float* force){
 
 
 
-void FMA_Force_Sensor::_get_force_raw(int* force_raw){
+void FMA_Force_Sensor::_get_force_raw(void){
     char response[4];
     int status;
+    uint16_t force_raw;
 
-    sh_i2c.read(_device_address, response, 4);
+    _sh_i2c.read(_device_address, response, 4);
 
     // Get the status of the force read
     status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
@@ -80,9 +81,10 @@ void FMA_Force_Sensor::_get_force_raw(int* force_raw){
 
 }
 
-void FMA_Force_Sensor::_get_temp_raw(int* temp_raw){
+void FMA_Force_Sensor::_get_temp_raw(void){
     char response[4];
     int status;
+    uint16_t temp_raw;
 
     _sh_i2c.read(_device_address, response, 4);
 
