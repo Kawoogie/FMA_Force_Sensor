@@ -10,7 +10,7 @@
 #define FORCE_10_COUNT                                     1638.4
 
 // Bit masks for decoding the data output
-#define FORCE5_STATES_BIT_MASK                             0x03
+#define FORCE_STATE_BIT_MASK                             0x03
 
 
 #define CALIBRATION_DELAY                                  10ms
@@ -45,7 +45,7 @@ FMA_Force_Sensor::FMA_Force_Sensor(
 void FMA_Force_Sensor::get_force(float* force){
     int force_raw;
 
-    _get_force_raw(force_raw);
+    _get_force_raw(&force_raw);
 
 
     // Calibrate the force value depending on the transfer function range.
@@ -67,7 +67,7 @@ void FMA_Force_Sensor::_get_force_raw(int* force_raw){
     char response[4];
     int status;
 
-    _read_from_sensor(&response);
+    sh_i2c.read(_device_address, response, 4);
 
     // Get the status of the force read
     status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
@@ -84,27 +84,18 @@ void FMA_Force_Sensor::_get_temp_raw(int* temp_raw){
     char response[4];
     int status;
 
-    _read_from_sensor(&response);
+    _sh_i2c.read(_device_address, response, 4);
 
     // Get the status of the force read
-    status = ( cmd[0] >> 6 ) & FORCE_STATE_BIT_MASK;
+    status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
 
     // Parse the temp data from the response
-    temp_raw = cmd[2];
+    temp_raw = response[2];
     temp_raw <<= 8;
-    temp_raw |= cmd[3];
+    temp_raw |= response[3];
     temp_raw >>= 5;
     temp_raw &= 0x07FF;
 
-
-}
-
-char[4] FMA_Force_Sensor::_read_from_sensor(void){
-    char response[4];
-
-    i2c.read(_device_address, response, 4);
-
-    return response;
 
 }
 
@@ -123,7 +114,7 @@ void FMA_Force_Sensor::set_zero(void){
     sum = 0;
     
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
-        get_force(force);
+        get_force(&force);
         
         sum += force;
         

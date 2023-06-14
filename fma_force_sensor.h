@@ -70,7 +70,6 @@ class FMA_Force_Sensor {
     int _zero_value;
     void _get_force_raw(int* force_raw);
     void _get_temp_raw(int* temp_raw);
-    char[4] _read_from_sensor(void);
     void _calibration_delay(void);
 
 };
