@@ -47,7 +47,7 @@ float FMA_Force_Sensor::get_force(void){
     float force_uncompensated = 0;
     float force;
 
-    _get_force_raw(force_raw);
+    force_raw = _get_force_raw();
 
 
     // Calibrate the force value depending on the transfer function range.
@@ -70,7 +70,7 @@ float FMA_Force_Sensor::get_temp(void){
     float temp = 0.0;
     
     // Get raw values
-    temp_raw = _get_temp_raw(&temp_raw);
+    temp_raw = _get_temp_raw();
 
     // Temperature calibration for Celcius
     temp = ((float(temp) / 2047) * 200) - 50.0;
@@ -80,9 +80,10 @@ float FMA_Force_Sensor::get_temp(void){
 
 
 
-void FMA_Force_Sensor::_get_force_raw(uint16_t force_raw){
+uint16_t FMA_Force_Sensor::_get_force_raw(void){
     char response[4];
     int status;
+    uint16_t force_raw;
 
     _sh_i2c.read(_device_address, response, 4);
 
@@ -95,11 +96,13 @@ void FMA_Force_Sensor::_get_force_raw(uint16_t force_raw){
     force_raw |= response[1];
     force_raw &= 0x3FFF; // Apply mask
 
+    return force_raw;
 }
 
-void FMA_Force_Sensor::_get_temp_raw(uint16_t temp_raw){
+uint16_t FMA_Force_Sensor::_get_temp_raw(void){
     char response[4];
     int status;
+    uint16_t temp_raw;
 
     _sh_i2c.read(_device_address, response, 4);
 
@@ -113,6 +116,7 @@ void FMA_Force_Sensor::_get_temp_raw(uint16_t temp_raw){
     temp_raw >>= 5;
     temp_raw &= 0x07FF;
 
+    return temp_raw;
 
 }
 
