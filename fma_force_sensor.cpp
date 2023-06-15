@@ -42,28 +42,45 @@ FMA_Force_Sensor::FMA_Force_Sensor(
 
     }
 
-void FMA_Force_Sensor::get_force(float* force){
-    uint16_t force_raw;
+float FMA_Force_Sensor::get_force(void){
+    uint16_t force_raw = 0;
+    float force_uncompensated = 0;
+    float force;
 
-    _get_force_raw(&force_raw);
+    _get_force_raw(force_raw);
 
 
     // Calibrate the force value depending on the transfer function range.
     if (_transfer_value == 80){
-        &force = ((float(&force_raw) - FORCE_20_COUNT) / (FORCE_80_COUNT - FORCE_20_COUNT)) * _max_range;
+        force_uncompensated = ((float(force_raw) - FORCE_20_COUNT) / (FORCE_80_COUNT - FORCE_20_COUNT)) * _max_range;
     }
     else{
-        &force = ((float(&force_raw) - FORCE_10_COUNT) / (FORCE_90_COUNT - FORCE_10_COUNT)) * _max_range;
+        force_uncompensated = ((float(force_raw) - FORCE_10_COUNT) / (FORCE_90_COUNT - FORCE_10_COUNT)) * _max_range;
     }
 
     // Remove the zero offset from the value
-    force = force - _zero_value;
+    force = force_uncompensated - _zero_value;
+
+    return force;
     
+}
+
+float FMA_Force_Sensor::get_temp(void){
+    uint16_t temp_raw = 0;
+    float temp = 0.0;
+    
+    // Get raw values
+    temp_raw = _get_temp_raw(&temp_raw);
+
+    // Temperature calibration for Celcius
+    temp = ((float(temp) / 2047) * 200) - 50.0;
+    
+    return temp;
 }
 
 
 
-void FMA_Force_Sensor::_get_force_raw(uint16_t* force_raw){
+void FMA_Force_Sensor::_get_force_raw(uint16_t force_raw){
     char response[4];
     int status;
 
@@ -80,7 +97,7 @@ void FMA_Force_Sensor::_get_force_raw(uint16_t* force_raw){
 
 }
 
-void FMA_Force_Sensor::_get_temp_raw(uint16_t* temp_raw){
+void FMA_Force_Sensor::_get_temp_raw(uint16_t temp_raw){
     char response[4];
     int status;
 
@@ -114,7 +131,7 @@ void FMA_Force_Sensor::set_zero(void){
     sum = 0;
     
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
-        get_force(&force);
+        get_force(force);
         
         sum += force;
         

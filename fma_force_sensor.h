@@ -55,21 +55,20 @@ class FMA_Force_Sensor {
      * @param max_value max range of force reading value
      * @param transfer_max upper limit of transfer function percentage.
     */
-    FMA_Force_Sensor(PinName Data = P5_7, PinName Clock = P6_0, int max_value = 25, int transfer_max = 80);
-    void get_force(float* force);
-    void get_temp(float* temperature);
+    FMA_Force_Sensor(PinName Data = P3_4, PinName Clock = P3_5, int max_value = 25, int transfer_max = 80);
+    float get_force(void);
+    float get_temp(void);
     void set_zero(void);
     void set_address(int new_address);
     
-
     private:
     I2C _sh_i2c;
     int _max_range;
     int _transfer_value;
     int _device_address;
     int _zero_value;
-    void _get_force_raw(uint16_t* force_raw);
-    void _get_temp_raw(uint16_t* temp_raw);
+    void _get_force_raw(uint16_t force_raw);
+    void _get_temp_raw(uint16_t temp_raw);
     void _calibration_delay(void);
 
 };
