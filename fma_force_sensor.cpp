@@ -73,7 +73,7 @@ float FMA_Force_Sensor::get_temp(void){
     temp_raw = _get_temp_raw();
 
     // Temperature calibration for Celcius
-    temp = ((float(temp) / 2047) * 200) - 50.0;
+    temp = ((float(temp_raw) / 2047) * 200) - 50.0;
     
     return temp;
 }
