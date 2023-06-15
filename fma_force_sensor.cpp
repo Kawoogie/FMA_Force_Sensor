@@ -10,7 +10,7 @@
 #define FORCE_10_COUNT                                     1638.4
 
 // Bit masks for decoding the data output
-#define FORCE_STATE_BIT_MASK                             0x03
+#define FORCE_STATE_BIT_MASK                               0x03
 
 
 #define CALIBRATION_DELAY                                  10ms
@@ -29,7 +29,7 @@ FMA_Force_Sensor::FMA_Force_Sensor(
                             int max_value,
                             int transfer_max
                             ):
-                            sh_i2c(Data, Clock)
+                            _sh_i2c(Data, Clock)
     {
         // Set up I2C communication
 
@@ -43,17 +43,17 @@ FMA_Force_Sensor::FMA_Force_Sensor(
     }
 
 void FMA_Force_Sensor::get_force(float* force){
-    int force_raw;
+    uint16_t force_raw;
 
     _get_force_raw(&force_raw);
 
 
     // Calibrate the force value depending on the transfer function range.
     if (_transfer_value == 80){
-        force = ((float(&force_raw) - FORCE_20_COUNT) / (FORCE_80_COUNT - FORCE_20_COUNT)) * _max_range;
+        &force = ((float(&force_raw) - FORCE_20_COUNT) / (FORCE_80_COUNT - FORCE_20_COUNT)) * _max_range;
     }
     else{
-        force = ((float(&force_raw) - FORCE_10_COUNT) / (FORCE_90_COUNT - FORCE_10_COUNT)) * _max_range;
+        &force = ((float(&force_raw) - FORCE_10_COUNT) / (FORCE_90_COUNT - FORCE_10_COUNT)) * _max_range;
     }
 
     // Remove the zero offset from the value
@@ -63,10 +63,9 @@ void FMA_Force_Sensor::get_force(float* force){
 
 
 
-void FMA_Force_Sensor::_get_force_raw(void){
+void FMA_Force_Sensor::_get_force_raw(uint16_t* force_raw){
     char response[4];
     int status;
-    uint16_t force_raw;
 
     _sh_i2c.read(_device_address, response, 4);
 
@@ -81,10 +80,9 @@ void FMA_Force_Sensor::_get_force_raw(void){
 
 }
 
-void FMA_Force_Sensor::_get_temp_raw(void){
+void FMA_Force_Sensor::_get_temp_raw(uint16_t* temp_raw){
     char response[4];
     int status;
-    uint16_t temp_raw;
 
     _sh_i2c.read(_device_address, response, 4);
 
