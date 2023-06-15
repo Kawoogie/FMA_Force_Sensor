@@ -26,7 +26,7 @@ const int addr8bit = 0x28 << 1; // 8bit I2C address, 0x80
 FMA_Force_Sensor::FMA_Force_Sensor(
                             PinName Data,
                             PinName Clock,
-                            int max_value,
+                            float max_value,
                             int transfer_max
                             ):
                             _sh_i2c(Data, Clock)
@@ -73,7 +73,7 @@ float FMA_Force_Sensor::get_temp(void){
     temp_raw = _get_temp_raw();
 
     // Temperature calibration for Celcius
-    temp = ((float(temp_raw) / 2047) * 200) - 50.0;
+    temp = ((float(temp_raw) / 2047.0) * 200.0) - 50.0;
     
     return temp;
 }
@@ -126,10 +126,9 @@ void FMA_Force_Sensor::set_address(int new_address){
 }
 
 void FMA_Force_Sensor::set_zero(void){
-    // uint16_t force_val;
-    // uint8_t status;
+
     uint8_t n_cnt;
-    float sum;
+    float sum = 0.0;
     float force = 0.0;
     
     sum = 0;
