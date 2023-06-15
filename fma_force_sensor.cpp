@@ -24,22 +24,19 @@ const int addr8bit = 0x28 << 1; // 8bit I2C address, 0x80
 /*****************************************************************************/
 /*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*/
 FMA_Force_Sensor::FMA_Force_Sensor(
-                            PinName Data,
-                            PinName Clock,
-                            float max_value,
+                            I2C &i2cbus,
+                            int max_value,
                             int transfer_max
                             ):
-                            _sh_i2c(Data, Clock)
+                            _sh_i2c(i2cbus)
     {
-        // Set up I2C communication
-
         // Set values for max_value and transfer_max assignments
         _max_range = max_value;
         _transfer_value = transfer_max;
-        _device_address = addr8bit;
         _zero_value = 0.0;
-        // Address of the sensor
 
+        // Address of the sensor
+        _device_address = addr8bit;
     }
 
 float FMA_Force_Sensor::get_force(void){
@@ -73,12 +70,10 @@ float FMA_Force_Sensor::get_temp(void){
     temp_raw = _get_temp_raw();
 
     // Temperature calibration for Celcius
-    temp = ((float(temp_raw) / 2047.0) * 200.0) - 50.0;
+    temp = ((float(temp_raw) / 2047) * 200) - 50.0;
     
     return temp;
 }
-
-
 
 uint16_t FMA_Force_Sensor::_get_force_raw(void){
     char response[4];
@@ -120,15 +115,16 @@ uint16_t FMA_Force_Sensor::_get_temp_raw(void){
 
 }
 
-
-void FMA_Force_Sensor::set_address(int new_address){
-    _device_address = new_address;
+void FMA_Force_Sensor::set_address(uint8_t new_address){
+    int addr_shifted = new_address << 1;
+    _device_address = addr_shifted;
 }
 
 void FMA_Force_Sensor::set_zero(void){
-
+    // uint16_t force_val;
+    // uint8_t status;
     uint8_t n_cnt;
-    float sum = 0.0;
+    float sum;
     float force = 0.0;
     
     sum = 0;
@@ -143,7 +139,6 @@ void FMA_Force_Sensor::set_zero(void){
     
     _zero_value = ( sum / 10.0 );
 }
-
 
 void FMA_Force_Sensor::_calibration_delay (void) {
     ThisThread::sleep_for(CALIBRATION_DELAY);
