@@ -135,7 +135,7 @@ void FMA_Force_Sensor::set_zero(void){
     sum = 0;
     
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
-        get_force(force);
+        force = get_force();
         
         sum += force;
         
