@@ -4,6 +4,7 @@ Code to run the FMA series of micro force sensors by Honeywell.
 
 Example of use:
 '''ruby
+
 #include "mbed.h"
 #include "max32630fthr.h"
 #include "fma_force_sensor.h"
