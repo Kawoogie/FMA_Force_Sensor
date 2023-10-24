@@ -120,7 +120,7 @@ void FMA_Force_Sensor::set_address(uint8_t new_address){
     _device_address = addr_shifted;
 }
 
-void FMA_Force_Sensor::set_zero(void){
+float FMA_Force_Sensor::set_zero(void){
     // uint16_t force_val;
     // uint8_t status;
     uint8_t n_cnt;
@@ -135,8 +135,9 @@ void FMA_Force_Sensor::set_zero(void){
     }
     
     offset = (sum / 10.0);
-
     set_zero_value(offset);
+
+    return sum;
 }
 
 float FMA_Force_Sensor::get_zero(void){

@@ -61,7 +61,7 @@ class FMA_Force_Sensor {
     FMA_Force_Sensor(I2C &i2cbus, int max_value = 25, int transfer_max = 80);
     float get_force(void);
     float get_temp(void);
-    void set_zero(void);
+    float set_zero(void);
     void set_zero_value(float zero_offset); // Added for troubleshooting
     void set_address(uint8_t new_address);
     float get_zero(void); // Added for troubleshooting
