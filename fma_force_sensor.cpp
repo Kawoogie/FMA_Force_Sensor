@@ -142,6 +142,11 @@ float FMA_Force_Sensor::get_zero(void){
     return _zero_value;
 }
 
+
+void FMA_Force_Sensor::set_zero_value(float zero_offset){
+    _zero_value = zero_offset;
+}
+
 void FMA_Force_Sensor::_calibration_delay (void) {
     ThisThread::sleep_for(CALIBRATION_DELAY);
 }
