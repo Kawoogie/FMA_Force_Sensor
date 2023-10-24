@@ -62,9 +62,9 @@ class FMA_Force_Sensor {
     float get_force(void);
     float get_temp(void);
     void set_zero(void);
-    void set_zero_value(float zero_offset);
+    void set_zero_value(float zero_offset); // Added for troubleshooting
     void set_address(uint8_t new_address);
-    float get_zero(void);
+    float get_zero(void); // Added for troubleshooting
     
     private:
     I2C &_sh_i2c;
