@@ -124,11 +124,9 @@ void FMA_Force_Sensor::set_zero(void){
     // uint16_t force_val;
     // uint8_t status;
     uint8_t n_cnt;
-    float sum;
+    float sum = 0.0;
     float force = 0.0;
-    
-    sum = 0.0;
-    
+        
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
         force = get_force();
         
