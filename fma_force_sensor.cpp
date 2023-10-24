@@ -13,7 +13,7 @@
 #define FORCE_STATE_BIT_MASK                               0x03
 
 
-#define CALIBRATION_DELAY                                  10ms
+#define CALIBRATION_DELAY                                  50ms
 
 // Default address for the sensor
 const int addr8bit = 0x28 << 1; // 8bit I2C address, 0x80
@@ -41,7 +41,7 @@ FMA_Force_Sensor::FMA_Force_Sensor(
 
 float FMA_Force_Sensor::get_force(void){
     uint16_t force_raw = 0;
-    float force_uncompensated = 0;
+    float force_uncompensated = 0.0;
     float force;
 
     force_raw = _get_force_raw();
@@ -120,24 +120,33 @@ void FMA_Force_Sensor::set_address(uint8_t new_address){
     _device_address = addr_shifted;
 }
 
-void FMA_Force_Sensor::set_zero(void){
+float FMA_Force_Sensor::set_zero(void){
     // uint16_t force_val;
     // uint8_t status;
     uint8_t n_cnt;
-    float sum;
-    float force = 0.0;
-    
-    sum = 0;
-    
-    for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
-        force = get_force();
+    float sum = 0.0;
+    float offset = 0.0;
         
-        sum += force;
+    for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
+        
+        sum += get_force();
         
         _calibration_delay();
     }
     
-    _zero_value = ( sum / 10.0 );
+    offset = (sum / 10.0);
+    _set_zero_value(offset);
+
+    return offset;
+}
+
+float FMA_Force_Sensor::get_zero(void){
+    return _zero_value;
+}
+
+
+void FMA_Force_Sensor::_set_zero_value(float zero_offset){
+    _zero_value = zero_offset;
 }
 
 void FMA_Force_Sensor::_calibration_delay (void) {
