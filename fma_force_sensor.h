@@ -71,7 +71,7 @@ class FMA_Force_Sensor {
     int _max_range;
     int _transfer_value;
     int _device_address;
-    int _zero_value;
+    float _zero_value;
     uint16_t _get_force_raw(void);
     uint16_t _get_temp_raw(void);
     void _calibration_delay(void);
