@@ -41,7 +41,7 @@ FMA_Force_Sensor::FMA_Force_Sensor(
 
 float FMA_Force_Sensor::get_force(void){
     uint16_t force_raw = 0;
-    float force_uncompensated = 0;
+    float force_uncompensated = 0.0;
     float force;
 
     force_raw = _get_force_raw();
@@ -127,7 +127,7 @@ void FMA_Force_Sensor::set_zero(void){
     float sum;
     float force = 0.0;
     
-    sum = 0;
+    sum = 0.0;
     
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
         force = get_force();
