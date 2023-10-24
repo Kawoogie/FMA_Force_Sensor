@@ -141,7 +141,7 @@ void FMA_Force_Sensor::set_zero(void){
 }
 
 float FMA_Force_Sensor::get_zero(void){
-    return _zero_value
+    return _zero_value;
 }
 
 void FMA_Force_Sensor::_calibration_delay (void) {
