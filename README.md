@@ -26,7 +26,8 @@ Example of use:
    i2c_bus.frequency(400000);
    float force_value = 0.0;
    float temp_value = 0.0;
-   // force_sensor.set_zero();
+   ThisThread::sleep_for((1000ms)); // Time for sensor to initialize
+   force_sensor.set_zero();
  
    while (true) {
 
