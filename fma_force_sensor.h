@@ -59,8 +59,8 @@ class FMA_Force_Sensor {
      * @param transfer_max upper limit of transfer function percentage.
     */
     FMA_Force_Sensor(I2C &i2cbus, int max_value = 25, int transfer_max = 80);
-    float get_force(void);
-    float get_temp(void);
+    int get_force(float &force_out);
+    int get_temp(float &temp_out);
     float set_zero(void);
     void set_address(uint8_t new_address);
     float get_zero(void); 
@@ -71,8 +71,8 @@ class FMA_Force_Sensor {
     int _transfer_value;
     int _device_address;
     float _zero_value;
-    uint16_t _get_force_raw(void);
-    uint16_t _get_temp_raw(void);
+    int _get_force_raw(int &force_val);
+    int _get_temp_raw(int &temp_val);
     void _calibration_delay(void);
     void _set_zero_value(float zero_offset);
 
