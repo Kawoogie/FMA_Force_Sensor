@@ -39,14 +39,19 @@ FMA_Force_Sensor::FMA_Force_Sensor(
         _device_address = addr8bit;
     }
 
-float FMA_Force_Sensor::get_force(void){
-    uint16_t force_raw = 0;
+int FMA_Force_Sensor::get_force(float &force_out){
+    int force_raw = 0;
     float force_uncompensated = 0.0;
-    float force;
+    int status;
 
-    force_raw = _get_force_raw();
+    status = _get_force_raw(force_raw);
 
+    if (force_raw == 99){
+        force_out = 99;
+        return status;
+    }
 
+    else {
     // Calibrate the force value depending on the transfer function range.
     if (_transfer_value == 80){
         force_uncompensated = ((float(force_raw) - FORCE_20_COUNT) / (FORCE_80_COUNT - FORCE_20_COUNT)) * _max_range;
@@ -56,62 +61,82 @@ float FMA_Force_Sensor::get_force(void){
     }
 
     // Remove the zero offset from the value
-    force = force_uncompensated - _zero_value;
+    force_out = force_uncompensated - _zero_value;
 
-    return force;
-    
+    return status;
+    } 
 }
 
-float FMA_Force_Sensor::get_temp(void){
-    uint16_t temp_raw = 0;
-    float temp = 0.0;
-    
+int FMA_Force_Sensor::get_temp(float &temp_out){
+    int temp_raw = 0;
+    // float temp = 0.0;
+    int status;
     // Get raw values
-    temp_raw = _get_temp_raw();
+    status = _get_temp_raw(temp_raw);
 
+
+    if (temp_raw == 99){
+        temp_out = temp_raw;
+    }
+    else{
     // Temperature calibration for Celcius
-    temp = ((float(temp_raw) / 2047) * 200) - 50.0;
+    temp_out = ((float(temp_raw) / 2047) * 200) - 50.0;
+    }
+
+    return status;
+}
+
+int FMA_Force_Sensor::_get_force_raw(int &force_val){
+    char response[4];
+    int status;
+    int force_raw;
+
+    status = _sh_i2c.read(_device_address, response, 4);
+
+    if (!status){
     
-    return temp;
+        // Get the status of the force read
+        status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
+
+        // Parse the force data from the response
+        force_raw = response[0];
+        force_raw <<= 8;
+        force_raw |= response[1];
+
+        force_val = force_raw & 0x3FFF; // Apply mask
+        return status;
+    }
+    else{
+        force_val = 99;
+        return status;
+    }
 }
 
-uint16_t FMA_Force_Sensor::_get_force_raw(void){
+int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
     char response[4];
     int status;
-    uint16_t force_raw;
+    int temp_raw;
 
-    _sh_i2c.read(_device_address, response, 4);
+    status = _sh_i2c.read(_device_address, response, 4);
 
-    // Get the status of the force read
-    status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
+    if (!status){
+        // Get the status of the force read
+        status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
 
-    // Parse the force data from the response
-    force_raw = response[0];
-    force_raw <<= 8;
-    force_raw |= response[1];
-    force_raw &= 0x3FFF; // Apply mask
+        // Parse the temp data from the response
+        temp_raw = response[2];
+        temp_raw <<= 8;
+        temp_raw |= response[3];
+        temp_raw >>= 5;
 
-    return force_raw;
-}
+        temp_val = temp_raw & 0x07FF;
+        return status;
 
-uint16_t FMA_Force_Sensor::_get_temp_raw(void){
-    char response[4];
-    int status;
-    uint16_t temp_raw;
-
-    _sh_i2c.read(_device_address, response, 4);
-
-    // Get the status of the force read
-    status = ( response[0] >> 6 ) & FORCE_STATE_BIT_MASK;
-
-    // Parse the temp data from the response
-    temp_raw = response[2];
-    temp_raw <<= 8;
-    temp_raw |= response[3];
-    temp_raw >>= 5;
-    temp_raw &= 0x07FF;
-
-    return temp_raw;
+    }
+    else{
+        temp_val = 99;
+        return status;
+    }
 
 }
 
@@ -125,12 +150,18 @@ float FMA_Force_Sensor::set_zero(void){
     // uint8_t status;
     uint8_t n_cnt;
     float sum = 0.0;
+    float force_reading = 0.0;
     float offset = 0.0;
+    int status;
         
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
         
-        sum += get_force();
+        status = get_force(force_reading);
         
+        if (!status){
+            sum += force_reading;
+        }
+
         _calibration_delay();
     }
     
