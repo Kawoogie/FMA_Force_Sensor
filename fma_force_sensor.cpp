@@ -40,7 +40,7 @@ FMA_Force_Sensor::FMA_Force_Sensor(
     }
 
 int FMA_Force_Sensor::get_force(float &force_out){
-    uint16_t force_raw = 0;
+    int force_raw = 0;
     float force_uncompensated = 0.0;
     int status;
 
@@ -61,7 +61,7 @@ int FMA_Force_Sensor::get_force(float &force_out){
 }
 
 int FMA_Force_Sensor::get_temp(float &temp_out){
-    uint16_t temp_raw = 0;
+    int temp_raw = 0;
     // float temp = 0.0;
     int status;
     // Get raw values
