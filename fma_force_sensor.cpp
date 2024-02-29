@@ -46,6 +46,12 @@ int FMA_Force_Sensor::get_force(float &force_out){
 
     status = _get_force_raw(force_raw);
 
+    if (force_raw == 99){
+        force_out = 99;
+        return status;
+    }
+
+    else {
     // Calibrate the force value depending on the transfer function range.
     if (_transfer_value == 80){
         force_uncompensated = ((float(force_raw) - FORCE_20_COUNT) / (FORCE_80_COUNT - FORCE_20_COUNT)) * _max_range;
@@ -57,7 +63,8 @@ int FMA_Force_Sensor::get_force(float &force_out){
     // Remove the zero offset from the value
     force_out = force_uncompensated - _zero_value;
 
-    return status; 
+    return status;
+    } 
 }
 
 int FMA_Force_Sensor::get_temp(float &temp_out){
@@ -67,9 +74,15 @@ int FMA_Force_Sensor::get_temp(float &temp_out){
     // Get raw values
     status = _get_temp_raw(temp_raw);
 
+
+    if (temp_raw == 99){
+        temp_out = temp_raw;
+    }
+    else{
     // Temperature calibration for Celcius
     temp_out = ((float(temp_raw) / 2047) * 200) - 50.0;
-    
+    }
+
     return status;
 }
 
@@ -94,7 +107,7 @@ int FMA_Force_Sensor::_get_force_raw(int &force_val){
         return status;
     }
     else{
-        force_val = 0;
+        force_val = 99;
         return status;
     }
 }
@@ -121,7 +134,7 @@ int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
 
     }
     else{
-        temp_val = 0;
+        temp_val = 99;
         return status;
     }
 
