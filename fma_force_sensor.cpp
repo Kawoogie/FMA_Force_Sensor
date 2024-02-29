@@ -137,12 +137,18 @@ float FMA_Force_Sensor::set_zero(void){
     // uint8_t status;
     uint8_t n_cnt;
     float sum = 0.0;
+    float force_reading = 0.0;
     float offset = 0.0;
+    int status;
         
     for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
         
-        sum += get_force();
+        status = get_force(force_reading);
         
+        if (!status){
+            sum += force_reading;
+        }
+
         _calibration_delay();
     }
     
