@@ -76,7 +76,7 @@ int FMA_Force_Sensor::get_temp(float &temp_out){
 int FMA_Force_Sensor::_get_force_raw(int &force_val){
     char response[4];
     int status;
-    uint16_t force_raw;
+    int force_raw;
 
     status = _sh_i2c.read(_device_address, response, 4);
 
@@ -90,7 +90,7 @@ int FMA_Force_Sensor::_get_force_raw(int &force_val){
         force_raw <<= 8;
         force_raw |= response[1];
 
-        force_val = force_raaw & 0x3FFF; // Apply mask
+        force_val = force_raw & 0x3FFF; // Apply mask
         return status;
     }
     else{
@@ -102,7 +102,7 @@ int FMA_Force_Sensor::_get_force_raw(int &force_val){
 int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
     char response[4];
     int status;
-    uint16_t temp_raw;
+    int temp_raw;
 
     status = _sh_i2c.read(_device_address, response, 4);
 
