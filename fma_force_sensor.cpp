@@ -107,7 +107,7 @@ int FMA_Force_Sensor::_get_force_raw(int &force_val){
         return status;
     }
     else{
-        force_val = 99;
+        force_val = -99;
         return status;
     }
 }
@@ -125,16 +125,15 @@ int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
 
         // Parse the temp data from the response
         temp_raw = response[2];
-        temp_raw <<= 8;
-        temp_raw |= response[3];
-        temp_raw >>= 5;
+        temp_raw <<= 3;
+        temp_raw |= (response[3] >> 5);
 
-        temp_val = temp_raw & 0x07FF;
+        temp_val = temp_raw;
         return status;
 
     }
     else{
-        temp_val = 99;
+        temp_val = -99;
         return status;
     }
 

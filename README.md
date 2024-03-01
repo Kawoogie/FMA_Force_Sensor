@@ -161,7 +161,7 @@ int main()
         serial.printf("%.3f, %.2f\n", force_value, temp_value);
         }
         // Display the errors along with the returned value.
-        // A value of 99 with a status of 1 indicates an I2C read error
+        // A value of -99 with a status of 1 indicates an I2C read error
         else{
             serial.printf("Error: Force: %.3f, Status: %d\n", force_value, force_status);
             serial.printf("Error: Temp: %.2f, Status %d\n", temp_value, temp_status);
