@@ -19,10 +19,13 @@
 const int addr8bit = 0x28 << 1; // 8bit I2C address, 0x80
 
 
-/*****************************************************************************/
-// Constructor
-/*****************************************************************************/
-/*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*/
+/** 
+ * Constructor
+ * 
+ * @param I2C I2C object for the I2C communication
+ * @param max_value max range of force sensor. Typically 5, 15, or 25.
+ * @param transfer_max upper limit of transfer function percentage.
+*/
 FMA_Force_Sensor::FMA_Force_Sensor(
                             I2C &i2cbus,
                             int max_value,
@@ -39,6 +42,13 @@ FMA_Force_Sensor::FMA_Force_Sensor(
         _device_address = addr8bit;
     }
 
+/**
+ * Get the force reading value from the sensor
+ * 
+ * @param[out] force_out float value of the sensor in Newtons
+ * @returns 0 on success, other value if failure
+ * if an I2C read error, will be 1 with a force_out value of -99. 
+*/
 int FMA_Force_Sensor::get_force(float &force_out){
     int force_raw = 0;
     float force_uncompensated = 0.0;
@@ -67,6 +77,13 @@ int FMA_Force_Sensor::get_force(float &force_out){
     } 
 }
 
+/**
+ * Get the temperature of the force sensor package.
+ * 
+ * @param[out] temp_out float value of the package temp.
+ * @returns 0 on success, other value if failure
+ * if an I2C read error, will be 1 with a force_out value of -99. 
+*/
 int FMA_Force_Sensor::get_temp(float &temp_out){
     int temp_raw = 0;
     // float temp = 0.0;
@@ -86,6 +103,13 @@ int FMA_Force_Sensor::get_temp(float &temp_out){
     return status;
 }
 
+/**
+ * Helper function to get the raw reading of the sensor
+ * force value before any conversions.
+ * 
+ * @param[out] force_val in value of the raw force reading.
+ * @returns 0 on success, other value if failure. 
+*/
 int FMA_Force_Sensor::_get_force_raw(int &force_val){
     char response[4];
     int status;
@@ -112,6 +136,13 @@ int FMA_Force_Sensor::_get_force_raw(int &force_val){
     }
 }
 
+/**
+ * Helper function to get the raw reading of the sensor
+ * temperature value before any conversions.
+ * 
+ * @param[out] temp_val in value of the raw temperature reading.
+ * @returns 0 on success, other value if failure. 
+*/
 int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
     char response[4];
     int status;
@@ -139,11 +170,25 @@ int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
 
 }
 
+/**
+ * Function to change the I2C address used to access the sensor.
+ * The default value used is 0x28.
+ * 
+ * @param[in] new_address New uint8_t value to use as sensor address.
+ * @returns 0 on success, other value if failure. 
+*/
 void FMA_Force_Sensor::set_address(uint8_t new_address){
     int addr_shifted = new_address << 1;
     _device_address = addr_shifted;
 }
 
+/**
+ * Function to set the zero read value of the sensor force measurements.
+ * Averages over 10 readings of the sensor.
+ * Sets the internal private function _zero_value.
+ * 
+ * @returns float value of the new sensor zero value. 
+*/
 float FMA_Force_Sensor::set_zero(void){
     // uint16_t force_val;
     // uint8_t status;
@@ -170,15 +215,30 @@ float FMA_Force_Sensor::set_zero(void){
     return offset;
 }
 
+/**
+ * Function to get the value used as the zero offset value
+ * 
+ * @returns float value of the sensor zero value. 
+*/
 float FMA_Force_Sensor::get_zero(void){
     return _zero_value;
 }
 
-
+/**
+ * Helper function to set the private value _zero_value. Used in
+ * setting the zero offset of the sensor force reading values.
+ * 
+ * @param zero_offset float value of the sensor zero value. 
+*/
 void FMA_Force_Sensor::_set_zero_value(float zero_offset){
     _zero_value = zero_offset;
 }
 
+/**
+ * Helper function to delay the code to allow the force sensor to settle
+ * before taking calibration measurements.
+ * 
+*/
 void FMA_Force_Sensor::_calibration_delay (void) {
     ThisThread::sleep_for(CALIBRATION_DELAY);
 }
