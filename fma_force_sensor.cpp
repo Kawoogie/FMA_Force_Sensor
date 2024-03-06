@@ -20,7 +20,7 @@ const int addr8bit = 0x28 << 1; // 8bit I2C address, 0x80
 
 
 /** 
- * Constructor
+ * @brief Constructor
  * 
  * @param I2C I2C object for the I2C communication
  * @param max_value max range of force sensor. Typically 5, 15, or 25.
@@ -43,7 +43,7 @@ FMA_Force_Sensor::FMA_Force_Sensor(
     }
 
 /**
- * Get the force reading value from the sensor
+ * @brief Get the force reading value from the sensor
  * 
  * @param[out] force_out float value of the sensor in Newtons
  * @returns 0 on success, other value if failure
@@ -78,7 +78,7 @@ int FMA_Force_Sensor::get_force(float &force_out){
 }
 
 /**
- * Get the temperature of the force sensor package.
+ * @brief Get the temperature of the force sensor package.
  * 
  * @param[out] temp_out float value of the package temp.
  * @returns 0 on success, other value if failure
@@ -104,7 +104,7 @@ int FMA_Force_Sensor::get_temp(float &temp_out){
 }
 
 /**
- * Helper function to get the raw reading of the sensor
+ * @brief Helper function to get the raw reading of the sensor
  * force value before any conversions.
  * 
  * @param[out] force_val in value of the raw force reading.
@@ -137,7 +137,7 @@ int FMA_Force_Sensor::_get_force_raw(int &force_val){
 }
 
 /**
- * Helper function to get the raw reading of the sensor
+ * @brief Helper function to get the raw reading of the sensor
  * temperature value before any conversions.
  * 
  * @param[out] temp_val in value of the raw temperature reading.
@@ -171,7 +171,7 @@ int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
 }
 
 /**
- * Function to change the I2C address used to access the sensor.
+ * @brief Function to change the I2C address used to access the sensor.
  * The default value used is 0x28.
  * 
  * @param[in] new_address New uint8_t value to use as sensor address.
@@ -183,7 +183,7 @@ void FMA_Force_Sensor::set_address(uint8_t new_address){
 }
 
 /**
- * Function to set the zero read value of the sensor force measurements.
+ * @brief Function to set the zero read value of the sensor force measurements.
  * Averages over 10 readings of the sensor.
  * Sets the internal private function _zero_value.
  * 
@@ -216,7 +216,7 @@ float FMA_Force_Sensor::set_zero(void){
 }
 
 /**
- * Function to get the value used as the zero offset value
+ * @brief Function to get the value used as the zero offset value
  * 
  * @returns float value of the sensor zero value. 
 */
@@ -225,7 +225,7 @@ float FMA_Force_Sensor::get_zero(void){
 }
 
 /**
- * Helper function to set the private value _zero_value. Used in
+ * @brief Helper function to set the private value _zero_value. Used in
  * setting the zero offset of the sensor force reading values.
  * 
  * @param zero_offset float value of the sensor zero value. 
@@ -235,7 +235,7 @@ void FMA_Force_Sensor::_set_zero_value(float zero_offset){
 }
 
 /**
- * Helper function to delay the code to allow the force sensor to settle
+ * @brief Helper function to delay the code to allow the force sensor to settle
  * before taking calibration measurements.
  * 
 */
