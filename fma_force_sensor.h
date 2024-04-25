@@ -82,7 +82,9 @@ class FMA_Force_Sensor {
     float set_zero(void);
     void set_address(uint8_t new_address);
     float get_zero(void); 
-    
+    int set_max_value(int new_max);
+    int max_value(void);
+
     private:
     I2C &_sh_i2c;
     int _max_range;

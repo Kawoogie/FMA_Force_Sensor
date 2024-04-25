@@ -103,6 +103,80 @@ int FMA_Force_Sensor::get_temp(float &temp_out){
     return status;
 }
 
+
+
+/**
+ * @brief Function to change the I2C address used to access the sensor.
+ * The default value used is 0x28.
+ * 
+ * @param[in] new_address New uint8_t value to use as sensor address.
+ * @returns 0 on success, other value if failure. 
+*/
+void FMA_Force_Sensor::set_address(uint8_t new_address){
+    int addr_shifted = new_address << 1;
+    _device_address = addr_shifted;
+}
+
+/**
+ * @brief Function to set the zero read value of the sensor force measurements.
+ * Averages over 10 readings of the sensor.
+ * Sets the internal private function _zero_value.
+ * 
+ * @returns float value of the new sensor zero value. 
+*/
+float FMA_Force_Sensor::set_zero(void){
+    // uint16_t force_val;
+    // uint8_t status;
+    uint8_t n_cnt;
+    float sum = 0.0;
+    float force_reading = 0.0;
+    float offset = 0.0;
+    int status;
+        
+    for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
+        
+        status = get_force(force_reading);
+        
+        if (!status){
+            sum += force_reading;
+        }
+
+        _calibration_delay();
+    }
+    
+    offset = (sum / 10.0);
+    _set_zero_value(offset);
+
+    return offset;
+}
+
+/**
+ * @brief Function to get the value used as the zero offset value
+ * 
+ * @returns float value of the sensor zero value. 
+*/
+float FMA_Force_Sensor::get_zero(void){
+    return _zero_value;
+}
+
+/**
+ * @brief Function to get the value used as the zero offset value
+ * 
+ * @returns float value of the sensor zero value. 
+*/
+int FMA_Force_Sensor::set_max_value(int new_max){
+
+}
+
+/**
+ * @brief Function to return the max value set for the device in Newtons
+ * 
+ * @returns int value of the sensor max value in Newtons. 
+*/
+int FMA_Force_Sensor::max_value(void){
+    return _max_range;
+}
+
 /**
  * @brief Helper function to get the raw reading of the sensor
  * force value before any conversions.
@@ -171,57 +245,12 @@ int FMA_Force_Sensor::_get_temp_raw(int &temp_val){
 }
 
 /**
- * @brief Function to change the I2C address used to access the sensor.
- * The default value used is 0x28.
+ * @brief Helper function to delay the code to allow the force sensor to settle
+ * before taking calibration measurements.
  * 
- * @param[in] new_address New uint8_t value to use as sensor address.
- * @returns 0 on success, other value if failure. 
 */
-void FMA_Force_Sensor::set_address(uint8_t new_address){
-    int addr_shifted = new_address << 1;
-    _device_address = addr_shifted;
-}
-
-/**
- * @brief Function to set the zero read value of the sensor force measurements.
- * Averages over 10 readings of the sensor.
- * Sets the internal private function _zero_value.
- * 
- * @returns float value of the new sensor zero value. 
-*/
-float FMA_Force_Sensor::set_zero(void){
-    // uint16_t force_val;
-    // uint8_t status;
-    uint8_t n_cnt;
-    float sum = 0.0;
-    float force_reading = 0.0;
-    float offset = 0.0;
-    int status;
-        
-    for ( n_cnt = 0; n_cnt < 10; n_cnt++ ) {
-        
-        status = get_force(force_reading);
-        
-        if (!status){
-            sum += force_reading;
-        }
-
-        _calibration_delay();
-    }
-    
-    offset = (sum / 10.0);
-    _set_zero_value(offset);
-
-    return offset;
-}
-
-/**
- * @brief Function to get the value used as the zero offset value
- * 
- * @returns float value of the sensor zero value. 
-*/
-float FMA_Force_Sensor::get_zero(void){
-    return _zero_value;
+void FMA_Force_Sensor::_calibration_delay (void) {
+    ThisThread::sleep_for(CALIBRATION_DELAY);
 }
 
 /**
@@ -232,13 +261,4 @@ float FMA_Force_Sensor::get_zero(void){
 */
 void FMA_Force_Sensor::_set_zero_value(float zero_offset){
     _zero_value = zero_offset;
-}
-
-/**
- * @brief Helper function to delay the code to allow the force sensor to settle
- * before taking calibration measurements.
- * 
-*/
-void FMA_Force_Sensor::_calibration_delay (void) {
-    ThisThread::sleep_for(CALIBRATION_DELAY);
 }
