@@ -76,12 +76,6 @@
 
 class FMA_Force_Sensor {
     public:
-    /** Constructor
-     * @param Data data pin for the I2C communication
-     * @param Clock clock pin for the I2C communication
-     * @param max_value max range of force reading value
-     * @param transfer_max upper limit of transfer function percentage.
-    */
     FMA_Force_Sensor(I2C &i2cbus, int max_value = 25, int transfer_max = 80);
     int get_force(float &force_out);
     int get_temp(float &temp_out);
