@@ -9,6 +9,10 @@
 #define FORCE_20_COUNT                                     3276.8
 #define FORCE_10_COUNT                                     1638.4
 
+// Maximum force range values
+#define MAX_VALUE_COUNT                                    3
+const int MAX_VALUES[] = {5, 15,25};
+
 // Bit masks for decoding the data output
 #define FORCE_STATE_BIT_MASK                               0x03
 
@@ -103,8 +107,6 @@ int FMA_Force_Sensor::get_temp(float &temp_out){
     return status;
 }
 
-
-
 /**
  * @brief Function to change the I2C address used to access the sensor.
  * The default value used is 0x28.
@@ -160,12 +162,24 @@ float FMA_Force_Sensor::get_zero(void){
 }
 
 /**
- * @brief Function to get the value used as the zero offset value
+ * @brief Function to set the max force value of the sensor
  * 
- * @returns float value of the sensor zero value. 
+ * @returns int 0 if success 
 */
 int FMA_Force_Sensor::set_max_value(int new_max){
+    int status = 1;
 
+    // Check to see if the new value is a valid value
+    // Only assign it if it is a valid value
+    // Set status to 0 to indicate success
+    for (int i = 0; i < MAX_VALUE_COUNT; i++){
+        if (MAX_VALUES[i] == new_max){
+            _max_range = new_max;
+            status = 0;
+        }
+    }
+
+    return status;
 }
 
 /**
