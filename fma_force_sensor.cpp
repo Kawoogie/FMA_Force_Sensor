@@ -201,7 +201,7 @@ int FMA_Force_Sensor::max_config(bool newton_5, bool newton_15){
         status = set_max_value(5);
     }
 
-    elif (!newton_15){
+    else if (!newton_15){
         status = set_max_value(15);
     }
 
