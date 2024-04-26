@@ -183,6 +183,36 @@ int FMA_Force_Sensor::set_max_value(int new_max){
 }
 
 /**
+ * @brief Function to set the sensor max value from two bool inputs. This
+ * function is used to set the max reading value of the sensor using pins
+ * grounded on a microprocessor. Set the respective bool false to configure
+ * the sensor. the newton_5 setting has precedence over the newton_15 setting.
+ * If neither pin is false, then 25 N is selected.
+ * 
+ * @param newton_5 bool set false for 5 N max scale
+ * @param newton_15 bool set false for 15 N max scale
+ * 
+ * @returns int 0 if a value is sucessfully set 
+*/
+int FMA_Force_Sensor::max_config(bool newton_5, bool newton_15){
+    int status = 1;
+
+    if (!newton_5){
+        status = set_max_value(5);
+    }
+
+    elif (!newton_15){
+        status = set_max_value(15);
+    }
+
+    else {
+        status = set_max_value(25);
+    }
+
+    return status;
+}
+
+/**
  * @brief Function to return the max value set for the device in Newtons
  * 
  * @returns int value of the sensor max value in Newtons. 
